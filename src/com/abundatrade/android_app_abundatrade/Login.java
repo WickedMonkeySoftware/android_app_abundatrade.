@@ -40,6 +40,9 @@ public class Login extends Activity {
 
 	String login;
 	String pw;
+	String syncKey;
+	String loginStatus;
+	String intErrors;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,20 +65,32 @@ public class Login extends Activity {
 				
 				//System.out.println("Hashed password: " + md5(pw));
 				
-				/*
+				
 				url = "http://abundatrade.com/trade/process/user/login/?user="
 						+ login + "&password=" + md5(pw) + "&mobile_scan=t";
-				*/
 				
-				url = "http://abundatrade.com/trade/process/user/login/?user=landers.robert@gmail.com&password=6519f8571452b3004e6f85cbaf3bdfef&mobile_scan=t";
+				
+				//url = "http://abundatrade.com/trade/process/user/login/?user=landers.robert@gmail.com&password=6519f8571452b3004e6f85cbaf3bdfef&mobile_scan=t";
 				new connection().execute("text");
+				
+				loginStatus = json.get("status");
+				
+				if (loginStatus.equalsIgnoreCase("logged in")) {
+					syncKey = json.get("key");
+					setResult(RESULT_OK);
+					Intent i = new Intent(Login.this, CameraScan.class);
+					i.putExtra("synckey", syncKey);
+					startActivity(i);
+					finish();
+				}
+				
 				// Echo to log
 				Log.v("Login", login);
 				Log.v("PW", pw);
 			}
 		});
 
-		/* Acct create button pressed */
+		/* Create account button pressed */
 		acct_but.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				login = login_edit.getText().toString();
