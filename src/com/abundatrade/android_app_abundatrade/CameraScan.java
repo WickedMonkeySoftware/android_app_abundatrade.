@@ -40,7 +40,8 @@ public class CameraScan extends Activity {
 	TextView scanText;
 	TextView resultText;
 	Button scanButton;
-
+	boolean loggedIn;
+	String syncKey;
 	ImageScanner scanner;
 
 	private boolean barcodeScanned = false;
@@ -53,6 +54,15 @@ public class CameraScan extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//Get login status and synckey if needed
+		Bundle passBundle = getIntent().getExtras();
+		loggedIn = passBundle.getBoolean("loggedIn");
+		
+		if (loggedIn) {
+			syncKey = passBundle.getString("synckey");
+		}
+		
 		
 		//Get rid of title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -151,6 +161,10 @@ public class CameraScan extends Activity {
 				//Open Lookup
 				Intent i = new Intent(CameraScan.this, LookupAndAdd.class);
 				i.putExtra("UPC", passUpc);
+				i.putExtra("loggedIn", loggedIn);
+				if (loggedIn) {
+					i.putExtra("synckey", syncKey);
+				}
 				startActivity(i);
 				
 				//close original instance of CameraScan

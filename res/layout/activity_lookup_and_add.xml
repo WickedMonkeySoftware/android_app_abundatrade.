@@ -30,10 +30,19 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
+        android:id="@+id/addButt"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contScan"
+        android:layout_centerHorizontal="true"
+        android:text="@string/button_add" />
+
+    <Button
         android:id="@+id/contScan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/upcResult"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="Scan Again" />
 
