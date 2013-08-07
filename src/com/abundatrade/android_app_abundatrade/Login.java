@@ -37,7 +37,8 @@ public class Login extends Activity {
 	HttpClient client;
 	String url;
 	JSONObject json;
-
+	
+	boolean loggedIn;
 	String login;
 	String pw;
 	String syncKey;
@@ -48,7 +49,10 @@ public class Login extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+		
 		client = new DefaultHttpClient();
+		loggedIn = false;
+		
 		// Define Buttons
 		Button login_but = (Button) findViewById(R.id.but_login);
 		Button acct_but = (Button) findViewById(R.id.but_cr_acct);
@@ -62,28 +66,40 @@ public class Login extends Activity {
 			public void onClick(View view) {
 				login = login_edit.getText().toString();
 				pw = pw_edit.getText().toString();
-				
-				//System.out.println("Hashed password: " + md5(pw));
-				
-				
+
+				// System.out.println("Hashed password: " + md5(pw));
+
 				url = "http://abundatrade.com/trade/process/user/login/?user="
 						+ login + "&password=" + md5(pw) + "&mobile_scan=t";
-				
-				
-				//url = "http://abundatrade.com/trade/process/user/login/?user=landers.robert@gmail.com&password=6519f8571452b3004e6f85cbaf3bdfef&mobile_scan=t";
+
+				// url =
+				// "http://abundatrade.com/trade/process/user/login/?user=landers.robert@gmail.com&password=6519f8571452b3004e6f85cbaf3bdfef&mobile_scan=t";
 				new connection().execute("text");
-				
-				loginStatus = json.get("status");
-				
-				if (loginStatus.equalsIgnoreCase("logged in")) {
-					syncKey = json.get("key");
-					setResult(RESULT_OK);
-					Intent i = new Intent(Login.this, CameraScan.class);
-					i.putExtra("synckey", syncKey);
-					startActivity(i);
-					finish();
+
+				try {
+					loginStatus = json.getString("status");
+					System.out.println("Login Status: " + loginStatus);
+					if (loginStatus.equalsIgnoreCase("logged in")) {
+						System.out.println("Logged In: Getting SyncKey");
+						loggedIn = true;
+						syncKey = json.getString("key");
+						System.out.println("Sync Key = " + syncKey);
+						setResult(RESULT_OK);
+						
+						//Start Scanner
+						Intent i = new Intent(Login.this, CameraScan.class);
+						//Pass syncKey and login status
+						i.putExtra("synckey", syncKey);
+						i.putExtra("loggedIn", loggedIn);
+						startActivity(i);
+						finish();
+					} else {
+						System.out.println("Login Failure!");
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
-				
+
 				// Echo to log
 				Log.v("Login", login);
 				Log.v("PW", pw);
@@ -96,7 +112,6 @@ public class Login extends Activity {
 				login = login_edit.getText().toString();
 				pw = pw_edit.getText().toString();
 
-				
 			}
 		});
 
@@ -105,31 +120,34 @@ public class Login extends Activity {
 			public void onClick(View view) {
 				setResult(RESULT_OK);
 				Intent i = new Intent(Login.this, CameraScan.class);
+				//pass login status
+				i.putExtra("loggedIn", loggedIn);
 				startActivity(i);
 				finish();
 
 			}
 		});
 	}
-	
-	public static String md5 (String input) {
+
+	public static String md5(String input) {
 		String md5 = null;
-		
-		if (null == input) return null;
-		
+
+		if (null == input)
+			return null;
+
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
-			
+
 			digest.update(input.getBytes(), 0, input.length());
-			
+
 			md5 = new BigInteger(1, digest.digest()).toString(16);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		
+
 		return md5;
 	}
-	
+
 	private class connection extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... params) {
@@ -155,7 +173,7 @@ public class Login extends Activity {
 				throws ClientProtocolException, IOException, JSONException {
 			System.out.println("URL: " + url);
 			HttpGet get = new HttpGet(url);
-			
+
 			System.out.println("HTTPGET CREATED");
 			HttpResponse r = null;
 			try {

@@ -14,5 +14,6 @@
     <string name="nLogin">Just Scan</string>
     <string name="acct_create">Create Account</string>
     <string name="head_desc">Abunda Header</string>
+    <string name="button_add">Add</string>
 
 </resources>
