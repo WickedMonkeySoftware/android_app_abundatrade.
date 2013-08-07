@@ -44,6 +44,7 @@ public class LookupAndAdd extends Activity {
 		loggedIn = upcBundle.getBoolean("loggedIn");
 		if (loggedIn) {
 			syncKey = upcBundle.getString("synckey");
+			System.out.println("Lookup syncKey:" + syncKey);
 		}
 
 		// url for initial lookup
@@ -86,11 +87,11 @@ public class LookupAndAdd extends Activity {
 			public void onClick(View arg0) {
 				setResult(RESULT_OK);
 				Intent i = new Intent(LookupAndAdd.this, CameraScan.class);
-				startActivity(i);
 				i.putExtra("loggedIn", loggedIn);
 				if (loggedIn) {
 					i.putExtra("synckey", syncKey);
 				}
+				startActivity(i);
 				finish();
 			}
 		});

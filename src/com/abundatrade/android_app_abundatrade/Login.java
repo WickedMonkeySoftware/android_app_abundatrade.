@@ -2,6 +2,7 @@ package com.abundatrade.android_app_abundatrade;
 
 import java.io.*;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.app.Activity;
@@ -26,6 +27,9 @@ import java.security.MessageDigest;
 import java.security.MessageDigestSpi;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
 
 import android.widget.EditText;
 
@@ -37,22 +41,24 @@ public class Login extends Activity {
 	HttpClient client;
 	String url;
 	JSONObject json;
-	
+	final Context context = this;
+
 	boolean loggedIn;
 	String login;
 	String pw;
 	String syncKey;
 	String loginStatus;
 	String intErrors;
+	String jsonString;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		
+
+		json = new JSONObject();
 		client = new DefaultHttpClient();
-		loggedIn = false;
-		
+
 		// Define Buttons
 		Button login_but = (Button) findViewById(R.id.but_login);
 		Button acct_but = (Button) findViewById(R.id.but_cr_acct);
@@ -76,6 +82,16 @@ public class Login extends Activity {
 				// "http://abundatrade.com/trade/process/user/login/?user=landers.robert@gmail.com&password=6519f8571452b3004e6f85cbaf3bdfef&mobile_scan=t";
 				new connection().execute("text");
 
+				// pauses main thread for 1 second. NEED A BETTER SOLUTION!
+				try {
+					Thread.sleep(600);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				System.out.println("Json: " + json.toString());
+
 				try {
 					loginStatus = json.getString("status");
 					System.out.println("Login Status: " + loginStatus);
@@ -85,16 +101,56 @@ public class Login extends Activity {
 						syncKey = json.getString("key");
 						System.out.println("Sync Key = " + syncKey);
 						setResult(RESULT_OK);
-						
-						//Start Scanner
+
+						// Start Scanner
 						Intent i = new Intent(Login.this, CameraScan.class);
-						//Pass syncKey and login status
+						// Pass syncKey and login status
 						i.putExtra("synckey", syncKey);
 						i.putExtra("loggedIn", loggedIn);
 						startActivity(i);
 						finish();
+
 					} else {
 						System.out.println("Login Failure!");
+
+						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+								context);
+
+						alertDialogBuilder.setTitle("Login Failure");
+
+						alertDialogBuilder
+								.setMessage("Invalid Login/Pass Please Try Again")
+								.setCancelable(false)
+								.setPositiveButton("Change Password",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												Intent browserIntent = new Intent(
+														Intent.ACTION_VIEW,
+														Uri.parse("http://abundatrade.com/trade/user/profile/"));
+												startActivity(browserIntent);
+
+											}
+										})
+								.setNegativeButton("Ok",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												// if this button is clicked,
+												// just close
+												// the dialog box and do nothing
+												dialog.cancel();
+											}
+										});
+
+						// create alert dialog
+						AlertDialog alertDialog = alertDialogBuilder.create();
+
+						// show it
+						alertDialog.show();
+
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -109,8 +165,10 @@ public class Login extends Activity {
 		/* Create account button pressed */
 		acct_but.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				login = login_edit.getText().toString();
-				pw = pw_edit.getText().toString();
+				// Open Browser to abundatrade acct creation
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri
+						.parse("http://abundatrade.com/trade/user/create/"));
+				startActivity(browserIntent);
 
 			}
 		});
@@ -120,7 +178,7 @@ public class Login extends Activity {
 			public void onClick(View view) {
 				setResult(RESULT_OK);
 				Intent i = new Intent(Login.this, CameraScan.class);
-				//pass login status
+				// pass login status
 				i.putExtra("loggedIn", loggedIn);
 				startActivity(i);
 				finish();
