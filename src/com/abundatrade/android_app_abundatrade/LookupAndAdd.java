@@ -33,14 +33,16 @@ public class LookupAndAdd extends Activity {
 	String syncKey;
 	boolean loggedIn;
 	boolean lookupAll;
-
+	boolean lookup_done;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lookup_and_add);
 		client = new DefaultHttpClient();
 		Bundle upcBundle = getIntent().getExtras();
-
+		lookup_done = false;
+		
 		upcStore = upcBundle.getString("UPC");
 		loggedIn = upcBundle.getBoolean("loggedIn");
 		if (loggedIn) {
@@ -65,15 +67,26 @@ public class LookupAndAdd extends Activity {
 		}
 		// Initial Object lookup
 		new connection().execute("text");
+		
+		while (lookup_done == false) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		UPC = (TextView) findViewById(R.id.upcResult);
 
 		UPC.setText(upcStore);
 
 		Button addItem = (Button) findViewById(R.id.addButt);
-
+		
+		
 		addItem.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
+				lookup_done = false;
 				setResult(RESULT_OK);
 
 				// Add item to list if logged in
@@ -85,6 +98,14 @@ public class LookupAndAdd extends Activity {
 							+ upcStore
 							+ "&action=lookup_item&product_qty=1";
 					new connection().execute("text");
+					while (lookup_done == false) {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 				} else {
 					System.out.println("Not Logged IN!!!!");
 				}
@@ -120,6 +141,7 @@ public class LookupAndAdd extends Activity {
 
 			try {
 				json = getResponse(url);
+				lookup_done = true;
 				return json.toString();
 			} catch (ClientProtocolException e) {
 				System.out.println("CLIENTPROTOCOL EXCEPTION!");
