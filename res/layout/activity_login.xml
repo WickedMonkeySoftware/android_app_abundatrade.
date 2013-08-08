@@ -83,11 +83,11 @@
         <requestFocus />
     </EditText>
 
-    <RadioButton
-        android:id="@+id/addall_radio"
+    <CheckBox
+        android:id="@+id/autoadd_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/pw_field"
+        android:layout_alignRight="@+id/abunda_head"
         android:layout_below="@+id/abunda_head"
         android:text="@string/autoadd_radio" />
 

@@ -9,7 +9,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.RadioButton;
+import android.widget.CheckBox;
 import android.widget.Button;
 import android.widget.Toast;
 import android.content.Intent;
@@ -53,7 +53,7 @@ public class Login extends Activity {
 	String loginStatus;
 	String intErrors;
 	String jsonString;
-	RadioButton add_all;
+	CheckBox add_all;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class Login extends Activity {
 		Button login_but = (Button) findViewById(R.id.but_login);
 		Button acct_but = (Button) findViewById(R.id.but_cr_acct);
 		Button scan_but = (Button) findViewById(R.id.but_nlogin);
-		add_all = (RadioButton) findViewById(R.id.addall_radio);
+		add_all = (CheckBox) findViewById(R.id.autoadd_check);
 
 		login_edit = (EditText) findViewById(R.id.login_field);
 		pw_edit = (EditText) findViewById(R.id.pw_field);
