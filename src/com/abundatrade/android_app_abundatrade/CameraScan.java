@@ -41,6 +41,7 @@ public class CameraScan extends Activity {
 	TextView resultText;
 	Button scanButton;
 	boolean loggedIn;
+	boolean lookupAll;
 	String syncKey;
 	ImageScanner scanner;
 
@@ -58,8 +59,8 @@ public class CameraScan extends Activity {
 		//Get login status and synckey if needed
 		Bundle passBundle = getIntent().getExtras();
 		loggedIn = passBundle.getBoolean("loggedIn");
-		
 		if (loggedIn) {
+			lookupAll = passBundle.getBoolean("lookupAll");
 			syncKey = passBundle.getString("synckey");
 		}
 		
@@ -164,6 +165,7 @@ public class CameraScan extends Activity {
 				i.putExtra("loggedIn", loggedIn);
 				if (loggedIn) {
 					i.putExtra("synckey", syncKey);
+					i.putExtra("lookupAll", lookupAll);
 				}
 				startActivity(i);
 				

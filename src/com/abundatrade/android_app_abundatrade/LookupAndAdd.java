@@ -32,6 +32,7 @@ public class LookupAndAdd extends Activity {
 	JSONObject json;
 	String syncKey;
 	boolean loggedIn;
+	boolean lookupAll;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +45,24 @@ public class LookupAndAdd extends Activity {
 		loggedIn = upcBundle.getBoolean("loggedIn");
 		if (loggedIn) {
 			syncKey = upcBundle.getString("synckey");
+			lookupAll = upcBundle.getBoolean("lookupAll");
 			System.out.println("Lookup syncKey:" + syncKey);
 		}
 
 		// url for initial lookup
-		url = "http://abundatrade.com/trade/process/request.php?mobile_scan=t&"
-				+ "mobile_type=android&product_code=" + upcStore
-				+ "&action=lookup_item&product_qty=0";
-
+		if (lookupAll == false) {
+			url = "http://abundatrade.com/trade/process/request.php?mobile_scan=t&"
+					+ "mobile_type=android&product_code="
+					+ upcStore
+					+ "&action=lookup_item&product_qty=0";
+		} else {
+			url = "http://abundatrade.com/trade/process/request.php?mobile_scan=t&"
+					+ "mobile_type=android&sync_key="
+					+ syncKey
+					+ "&product_code="
+					+ upcStore
+					+ "&action=lookup_item&product_qty=1";
+		}
 		// Initial Object lookup
 		new connection().execute("text");
 
@@ -65,7 +76,7 @@ public class LookupAndAdd extends Activity {
 			public void onClick(View arg0) {
 				setResult(RESULT_OK);
 
-				//Add item to list if logged in
+				// Add item to list if logged in
 				if (loggedIn) {
 					url = "http://abundatrade.com/trade/process/request.php?mobile_scan=t&"
 							+ "mobile_type=android&sync_key="
@@ -90,6 +101,7 @@ public class LookupAndAdd extends Activity {
 				i.putExtra("loggedIn", loggedIn);
 				if (loggedIn) {
 					i.putExtra("synckey", syncKey);
+					i.putExtra("lookupAll", lookupAll);
 				}
 				startActivity(i);
 				finish();

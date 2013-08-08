@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.RadioButton;
 import android.widget.Button;
 import android.widget.Toast;
 import android.content.Intent;
@@ -42,7 +43,9 @@ public class Login extends Activity {
 	String url;
 	JSONObject json;
 	final Context context = this;
-
+	
+	boolean lookupAll;
+	boolean lookup_done;
 	boolean loggedIn;
 	String login;
 	String pw;
@@ -50,12 +53,15 @@ public class Login extends Activity {
 	String loginStatus;
 	String intErrors;
 	String jsonString;
+	RadioButton add_all;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-
+		
+		lookupAll = false;
+		
 		json = new JSONObject();
 		client = new DefaultHttpClient();
 
@@ -63,6 +69,7 @@ public class Login extends Activity {
 		Button login_but = (Button) findViewById(R.id.but_login);
 		Button acct_but = (Button) findViewById(R.id.but_cr_acct);
 		Button scan_but = (Button) findViewById(R.id.but_nlogin);
+		add_all = (RadioButton) findViewById(R.id.addall_radio);
 
 		login_edit = (EditText) findViewById(R.id.login_field);
 		pw_edit = (EditText) findViewById(R.id.pw_field);
@@ -70,6 +77,7 @@ public class Login extends Activity {
 		/* Login button pressed */
 		login_but.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
+				lookup_done = false;
 				login = login_edit.getText().toString();
 				pw = pw_edit.getText().toString();
 
@@ -77,19 +85,24 @@ public class Login extends Activity {
 
 				url = "http://abundatrade.com/trade/process/user/login/?user="
 						+ login + "&password=" + md5(pw) + "&mobile_scan=t";
-
+				
+				
+				
 				// url =
 				// "http://abundatrade.com/trade/process/user/login/?user=landers.robert@gmail.com&password=6519f8571452b3004e6f85cbaf3bdfef&mobile_scan=t";
 				new connection().execute("text");
-
-				// pauses main thread for 1 second. NEED A BETTER SOLUTION!
-				try {
-					Thread.sleep(600);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				
+				//Wait in main thread until lookup is complete
+				while (lookup_done == false) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-
+				
+				
 				System.out.println("Json: " + json.toString());
 
 				try {
@@ -101,12 +114,16 @@ public class Login extends Activity {
 						syncKey = json.getString("key");
 						System.out.println("Sync Key = " + syncKey);
 						setResult(RESULT_OK);
-
+						
+						//check scan all option
+						lookupAll = add_all.isChecked();
+						
 						// Start Scanner
 						Intent i = new Intent(Login.this, CameraScan.class);
 						// Pass syncKey and login status
 						i.putExtra("synckey", syncKey);
 						i.putExtra("loggedIn", loggedIn);
+						i.putExtra("lookupAll", lookupAll);
 						startActivity(i);
 						finish();
 
@@ -249,11 +266,13 @@ public class Login extends Activity {
 				System.out.println("DATA: " + data);
 				JSONObject temp = new JSONObject(data);
 				System.out.println("Echo: " + temp.toString());
+				lookup_done = true;
 				return temp;
 			} else {
 				System.out.println("Entering else!");
 				// Toast.makeText(LookupAndAdd.this, "error",
 				// Toast.LENGTH_SHORT);
+				lookup_done = true;
 				return null;
 			}
 
