@@ -9,22 +9,9 @@
     tools:context=".LookupAndAdd" >
 
     <TextView
-        android:id="@+id/resultLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="51dp"
-        android:layout_marginTop="62dp"
-        android:text="Result:"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
         android:id="@+id/upcResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/resultLabel"
-        android:layout_below="@+id/resultLabel"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="15dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -34,16 +21,26 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/contScan"
-        android:layout_centerHorizontal="true"
+        android:layout_alignTop="@+id/contScan"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/contScan"
         android:text="@string/button_add" />
 
     <Button
         android:id="@+id/contScan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:text="Scan Again" />
+
+    <WebView
+        android:id="@+id/webView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/addButt"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>
