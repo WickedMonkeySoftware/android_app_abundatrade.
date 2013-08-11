@@ -6,6 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/white"
     tools:context=".Login" >
 
     <ImageView
@@ -51,7 +52,7 @@
         android:layout_below="@+id/lab_login"
         android:ems="10"
         android:inputType="textEmailAddress" />
-
+		<requestFocus />
     <EditText
         android:id="@+id/pw_field"
         android:layout_width="wrap_content"
@@ -61,7 +62,7 @@
         android:ems="10"
         android:inputType="textPassword" >
 
-        <requestFocus />
+        
     </EditText>
 
     <CheckBox

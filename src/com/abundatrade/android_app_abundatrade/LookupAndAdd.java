@@ -94,7 +94,7 @@ public class LookupAndAdd extends Activity {
 		try {
 			itemTotalQty = json.getString("total_qty");
 			itemTotal = json.getString("total");
-			itemTitle = json.getString("product_code");
+			itemTitle = json.getString("title");
 			itemPrice = json.getString("price");
 			itemImage = json.getString("imagel");
 			itemCurrency = json.getString("currency_for_total");

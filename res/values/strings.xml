@@ -17,5 +17,6 @@
     <string name="button_add">Add</string>
     <string name="autoadd_radio">Add All Items</string>
     <string name="check_remember">Remember Me</string>
+    <color name="white">#FFFFFF</color>
 
 </resources>

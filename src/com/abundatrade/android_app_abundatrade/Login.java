@@ -37,14 +37,14 @@ import android.widget.EditText;
 
 public class Login extends Activity {
 
-	private EditText login_edit;
-	private EditText pw_edit;
+	EditText login_edit;
+	EditText pw_edit;
 
 	public HttpClient client;
 	public String url;
 	public JSONObject json;
 	final Context context = this;
-<<<<<<< HEAD
+
 
 	public static final String PREFS_NAME = "AbundaPrefs";
 	private static final String PREF_USERNAME = "username";
@@ -62,19 +62,9 @@ public class Login extends Activity {
 	private String jsonString;
 	private CheckBox add_all;
 	private CheckBox remember_me;
-=======
+
 	
-	boolean lookupAll;
-	boolean lookup_done;
-	boolean loggedIn;
-	String login;
-	String pw;
-	String syncKey;
-	String loginStatus;
-	String intErrors;
-	String jsonString;
-	CheckBox add_all;
->>>>>>> 196a46040da95a318a8159c5787b55e2a674a816
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,10 +81,9 @@ public class Login extends Activity {
 		Button acct_but = (Button) findViewById(R.id.but_cr_acct);
 		Button scan_but = (Button) findViewById(R.id.but_nlogin);
 		add_all = (CheckBox) findViewById(R.id.autoadd_check);
-<<<<<<< HEAD
+
 		remember_me = (CheckBox) findViewById(R.id.remember_check);
-=======
->>>>>>> 196a46040da95a318a8159c5787b55e2a674a816
+
 
 		login_edit = (EditText) findViewById(R.id.login_field);
 		pw_edit = (EditText) findViewById(R.id.pw_field);
@@ -105,13 +94,13 @@ public class Login extends Activity {
 		String prefPw = pref.getString(PREF_PASSWORD, null);
 		
 		//Fill the fields with stored login information
-		/*
+		
 		if(prefUserName != null && prefPw != null) {
 			remember_me.setChecked(true);
 			login_edit.setText(prefUserName, TextView.BufferType.EDITABLE);
 			pw_edit.setText(prefPw, TextView.BufferType.EDITABLE);
 		}
-		*/
+		
 
 		/* Login button pressed */
 		login_but.setOnClickListener(new View.OnClickListener() {
@@ -147,13 +136,22 @@ public class Login extends Activity {
 					if (loginStatus.equalsIgnoreCase("logged in")) {
 
 						rememberMe = remember_me.isChecked();
-
+						
+						//Store Login and Password
 						if (rememberMe) {
 							getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 									.edit()
 									.putString(PREF_USERNAME, login)
 									.putString(PREF_PASSWORD, pw)
 									.commit();
+						}
+						//Erase any information stored
+						else {
+							getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+										.edit()
+										.putString(PREF_USERNAME, null)
+										.putString(PREF_PASSWORD, null)
+										.commit();
 						}
 
 						System.out.println("Logged In: Getting SyncKey");
