@@ -34,16 +34,6 @@
         android:text="@string/acct_create" />
 
     <TextView
-        android:id="@+id/lab_pw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lab_login"
-        android:layout_below="@+id/lab_login"
-        android:layout_marginTop="60dp"
-        android:text="@string/Password"
-        android:textSize="20sp" />
-
-    <TextView
         android:id="@+id/lab_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,15 +42,6 @@
         android:layout_toLeftOf="@+id/but_cr_acct"
         android:text="@string/Login"
         android:textSize="20sp" />
-
-    <Button
-        android:id="@+id/but_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/lab_pw"
-        android:layout_marginTop="57dp"
-        android:layout_toRightOf="@+id/lab_pw"
-        android:text="@string/but_login" />
 
     <EditText
         android:id="@+id/login_field"
@@ -83,12 +64,38 @@
         <requestFocus />
     </EditText>
 
-    <RadioButton
-        android:id="@+id/addall_radio"
+    <CheckBox
+        android:id="@+id/autoadd_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/pw_field"
+        android:layout_alignRight="@+id/abunda_head"
         android:layout_below="@+id/abunda_head"
         android:text="@string/autoadd_radio" />
+
+    <CheckBox
+        android:id="@+id/remember_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/pw_field"
+        android:text="@string/check_remember" />
+
+    <TextView
+        android:id="@+id/lab_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lab_login"
+        android:layout_below="@+id/login_field"
+        android:layout_marginTop="14dp"
+        android:text="@string/Password"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/but_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/remember_check"
+        android:layout_toRightOf="@+id/lab_pw"
+        android:text="@string/but_login" />
 
 </RelativeLayout>

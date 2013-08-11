@@ -24,17 +24,26 @@ import org.apache.http.util.EntityUtils;
 
 public class LookupAndAdd extends Activity {
 
-	TextView UPC;
+	public TextView UPC;
 	public String upcStore;
 	public String jsonResponse;
 	public String url;
-	HttpClient client;
-	JSONObject json;
-	String syncKey;
-	boolean loggedIn;
-	boolean lookupAll;
-	boolean lookup_done;
-	
+	public HttpClient client;
+	public JSONObject json;
+	public String syncKey;
+	public boolean loggedIn;
+	public boolean lookupAll;
+	public boolean lookup_done;
+
+	public String itemTotalQty;
+	public String itemTotal;
+	public String itemTitle;
+	public String itemPrice;
+	public String itemImage;
+	public String itemCurrency;
+	public String itemQuantity;
+	public String itemID;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,7 +51,7 @@ public class LookupAndAdd extends Activity {
 		client = new DefaultHttpClient();
 		Bundle upcBundle = getIntent().getExtras();
 		lookup_done = false;
-		
+
 		upcStore = upcBundle.getString("UPC");
 		loggedIn = upcBundle.getBoolean("loggedIn");
 		if (loggedIn) {
@@ -67,7 +76,7 @@ public class LookupAndAdd extends Activity {
 		}
 		// Initial Object lookup
 		new connection().execute("text");
-		
+
 		while (lookup_done == false) {
 			try {
 				Thread.sleep(100);
@@ -77,13 +86,36 @@ public class LookupAndAdd extends Activity {
 			}
 		}
 
-		UPC = (TextView) findViewById(R.id.upcResult);
+		// UPC = (TextView) findViewById(R.id.upcResult);
 
-		UPC.setText(upcStore);
+		// UPC.setText(upcStore);
+
+		/* Pull information from initial lookup */
+		try {
+			itemTotalQty = json.getString("total_qty");
+			itemTotal = json.getString("total");
+			itemTitle = json.getString("product_code");
+			itemPrice = json.getString("price");
+			itemImage = json.getString("imagel");
+			itemCurrency = json.getString("currency_for_total");
+			itemQuantity = json.getString("Total");
+			itemID = json.getString("id");
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		System.out.println("Total Qty: " + itemTotalQty);
+		System.out.println("Item Total: " + itemTotal);
+		System.out.println("Item Title: " + itemTitle);
+		System.out.println("Item Price: " + itemPrice);
+		System.out.println("Item Image: " + itemImage);
+		System.out.println("Item Currency: " + itemCurrency);
+		System.out.println("Item Qty: " + itemQuantity);
+		System.out.println("Item ID: " + itemID);
 
 		Button addItem = (Button) findViewById(R.id.addButt);
-		
-		
+
 		addItem.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				lookup_done = false;

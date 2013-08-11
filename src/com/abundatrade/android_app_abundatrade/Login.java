@@ -9,7 +9,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.RadioButton;
+import android.widget.CheckBox;
 import android.widget.Button;
 import android.widget.Toast;
 import android.content.Intent;
@@ -30,38 +30,45 @@ import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.app.AlertDialog;
 
 import android.widget.EditText;
 
 public class Login extends Activity {
 
-	EditText login_edit;
-	EditText pw_edit;
+	private EditText login_edit;
+	private EditText pw_edit;
 
-	HttpClient client;
-	String url;
-	JSONObject json;
+	public HttpClient client;
+	public String url;
+	public JSONObject json;
 	final Context context = this;
-	
-	boolean lookupAll;
-	boolean lookup_done;
-	boolean loggedIn;
-	String login;
-	String pw;
-	String syncKey;
-	String loginStatus;
-	String intErrors;
-	String jsonString;
-	RadioButton add_all;
+
+	public static final String PREFS_NAME = "AbundaPrefs";
+	private static final String PREF_USERNAME = "username";
+	private static final String PREF_PASSWORD = "password";
+
+	private boolean rememberMe;
+	private boolean lookupAll;
+	private boolean lookup_done;
+	private boolean loggedIn;
+	private String login;
+	private String pw;
+	private String syncKey;
+	private String loginStatus;
+	private String intErrors;
+	private String jsonString;
+	private CheckBox add_all;
+	private CheckBox remember_me;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		
+
 		lookupAll = false;
-		
+
 		json = new JSONObject();
 		client = new DefaultHttpClient();
 
@@ -69,10 +76,25 @@ public class Login extends Activity {
 		Button login_but = (Button) findViewById(R.id.but_login);
 		Button acct_but = (Button) findViewById(R.id.but_cr_acct);
 		Button scan_but = (Button) findViewById(R.id.but_nlogin);
-		add_all = (RadioButton) findViewById(R.id.addall_radio);
+		add_all = (CheckBox) findViewById(R.id.autoadd_check);
+		remember_me = (CheckBox) findViewById(R.id.remember_check);
 
 		login_edit = (EditText) findViewById(R.id.login_field);
 		pw_edit = (EditText) findViewById(R.id.pw_field);
+		
+		//Get login and pw if stored
+		SharedPreferences pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+		String prefUserName = pref.getString(PREF_USERNAME, null);
+		String prefPw = pref.getString(PREF_PASSWORD, null);
+		
+		//Fill the fields with stored login information
+		/*
+		if(prefUserName != null && prefPw != null) {
+			remember_me.setChecked(true);
+			login_edit.setText(prefUserName, TextView.BufferType.EDITABLE);
+			pw_edit.setText(prefPw, TextView.BufferType.EDITABLE);
+		}
+		*/
 
 		/* Login button pressed */
 		login_but.setOnClickListener(new View.OnClickListener() {
@@ -85,14 +107,12 @@ public class Login extends Activity {
 
 				url = "http://abundatrade.com/trade/process/user/login/?user="
 						+ login + "&password=" + md5(pw) + "&mobile_scan=t";
-				
-				
-				
+
 				// url =
 				// "http://abundatrade.com/trade/process/user/login/?user=landers.robert@gmail.com&password=6519f8571452b3004e6f85cbaf3bdfef&mobile_scan=t";
 				new connection().execute("text");
-				
-				//Wait in main thread until lookup is complete
+
+				// Wait in main thread until lookup is complete
 				while (lookup_done == false) {
 					try {
 						Thread.sleep(100);
@@ -101,23 +121,33 @@ public class Login extends Activity {
 						e.printStackTrace();
 					}
 				}
-				
-				
+
 				System.out.println("Json: " + json.toString());
 
 				try {
 					loginStatus = json.getString("status");
 					System.out.println("Login Status: " + loginStatus);
 					if (loginStatus.equalsIgnoreCase("logged in")) {
+
+						rememberMe = remember_me.isChecked();
+
+						if (rememberMe) {
+							getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+									.edit()
+									.putString(PREF_USERNAME, login)
+									.putString(PREF_PASSWORD, pw)
+									.commit();
+						}
+
 						System.out.println("Logged In: Getting SyncKey");
 						loggedIn = true;
 						syncKey = json.getString("key");
 						System.out.println("Sync Key = " + syncKey);
 						setResult(RESULT_OK);
-						
-						//check scan all option
+
+						// check scan all option
 						lookupAll = add_all.isChecked();
-						
+
 						// Start Scanner
 						Intent i = new Intent(Login.this, CameraScan.class);
 						// Pass syncKey and login status
@@ -136,7 +166,8 @@ public class Login extends Activity {
 						alertDialogBuilder.setTitle("Login Failure");
 
 						alertDialogBuilder
-								.setMessage("Invalid Login/Pass Please Try Again")
+								.setMessage(
+										"Invalid Login/Pass Please Try Again")
 								.setCancelable(false)
 								.setPositiveButton("Change Password",
 										new DialogInterface.OnClickListener() {
