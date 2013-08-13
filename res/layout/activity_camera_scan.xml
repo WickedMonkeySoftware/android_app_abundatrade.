@@ -14,21 +14,11 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
   />
-    
-    <Button
-        android:id="@+id/ScanButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="Scan" />
 
     <TextView
         android:id="@+id/scanText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/ScanButton"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="15dp" />
 

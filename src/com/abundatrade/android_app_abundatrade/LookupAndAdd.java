@@ -5,14 +5,14 @@ import java.io.*;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.app.Activity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 import android.content.Intent;
 import android.widget.TextView;
-import org.codehaus.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.apache.http.HttpEntity;
@@ -22,6 +22,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.*;
 import org.apache.http.util.EntityUtils;
 
+/**
+ * Activity that sends user information (sync key) as well as a scanned
+ * product code to the abundatrade server and retrieves product information.
+ * User can then add the item to their current calculator list on the abundatrade
+ * website.
+ * @author James D.
+ *
+ */
 public class LookupAndAdd extends Activity {
 
 	public TextView UPC;
@@ -43,6 +51,10 @@ public class LookupAndAdd extends Activity {
 	public String itemCurrency;
 	public String itemQuantity;
 	public String itemID;
+
+	public static final String PREFS_NAME = "AbundaPrefs";
+	private static final String PREF_USERNAME = "username";
+	private static final String PREF_PASSWORD = "password";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +116,7 @@ public class LookupAndAdd extends Activity {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		System.out.println("Total Qty: " + itemTotalQty);
 		System.out.println("Item Total: " + itemTotal);
 		System.out.println("Item Title: " + itemTitle);
@@ -115,7 +127,8 @@ public class LookupAndAdd extends Activity {
 		System.out.println("Item ID: " + itemID);
 
 		Button addItem = (Button) findViewById(R.id.addButt);
-
+		
+		/* Add item button pressed */
 		addItem.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				lookup_done = false;
@@ -146,7 +159,8 @@ public class LookupAndAdd extends Activity {
 		});
 
 		Button contScan = (Button) findViewById(R.id.contScan);
-
+		
+		/*Continue scanning button pressed */
 		contScan.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				setResult(RESULT_OK);
@@ -161,11 +175,51 @@ public class LookupAndAdd extends Activity {
 			}
 		});
 	}
+	
+	/**
+	 * Creates a menu if the user presses the menu button on their phone.
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.lookup_and_add, menu);
+		return true;
+	}
+	
+	/**
+	 * Displays the menu and defines the program's response to different
+	 * buttons being pressed.
+	 */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.log_out:
+			//Remove the stored login information and return to login screen
+			getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+					.putString(PREF_USERNAME, null)
+					.putString(PREF_PASSWORD, null).commit();
+			startActivity(new Intent(this, Login.class));
+			finish();
+			return true;
+		case R.id.info:
+			// startActivity(new Intent(this, Info.class));
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
 	public void setUpc(String UPC) {
 		upcStore = UPC;
 	}
 
+	
+	/**
+	 * Embedded class that handles the server communications. Extends and
+	 * implements AsyncTask to run connections in a separate thread.
+	 * 
+	 * @author James D.
+	 * 
+	 */
 	private class connection extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... params) {
@@ -187,7 +241,15 @@ public class LookupAndAdd extends Activity {
 			}
 			return null;
 		}
-
+		
+		/**
+		 * Sends and receives httpget to the abundatrade server.
+		 * @param url of the get request
+		 * @return JSONObject containing login status and sync-key
+		 * @throws ClientProtocolException
+		 * @throws IOException
+		 * @throws JSONException
+		 */
 		public JSONObject getResponse(String url)
 				throws ClientProtocolException, IOException, JSONException {
 			System.out.println("URL: " + url);

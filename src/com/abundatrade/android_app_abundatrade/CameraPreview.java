@@ -19,7 +19,11 @@ import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Parameters;
 
-/** A basic Camera preview class */
+/** 
+ * A basic Camera preview class
+ * @author Zbar
+ * Code provided verbatim under the lgpl2.0 license.
+ */
 public class CameraPreview extends SurfaceView implements
 		SurfaceHolder.Callback {
 	private SurfaceHolder mHolder;

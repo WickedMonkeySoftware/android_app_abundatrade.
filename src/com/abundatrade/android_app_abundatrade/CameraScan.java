@@ -6,11 +6,8 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.content.Intent;
 
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.Button;
@@ -18,12 +15,9 @@ import android.widget.Button;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.AutoFocusCallback;
-import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 
 import android.widget.TextView;
-import android.graphics.ImageFormat;
-
 /* Import ZBar Class files */
 import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Image;
@@ -31,21 +25,26 @@ import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 import net.sourceforge.zbar.Config;
 
+/**
+ * Activity that utilizes the camera to scan a barcode.  Supports
+ * EAN-13/UPC-A, UPC-E, EAN-8, Code 128, Code 39, Interleaved 2 of 5 and QR Code
+ * @author James D.
+ * Code provided by zbar library under the lgpl2.0 license.
+ */
 public class CameraScan extends Activity {
 
 	private Camera mCamera;
 	private CameraPreview mPreview;
 	private Handler autoFocusHandler;
 
-	TextView scanText;
-	TextView resultText;
-	Button scanButton;
-	boolean loggedIn;
-	boolean lookupAll;
-	String syncKey;
-	ImageScanner scanner;
+	public TextView scanText;
+	public TextView resultText;
+	public Button scanButton;
+	public boolean loggedIn;
+	public boolean lookupAll;
+	public String syncKey;
+	public ImageScanner scanner;
 
-	private boolean barcodeScanned = false;
 	private boolean previewing = true;
 
 	static {
@@ -88,20 +87,7 @@ public class CameraScan extends Activity {
 		scanText = (TextView)findViewById(R.id.scanText);
 		//result text
 		resultText= (TextView)findViewById(R.id.upcResult);
-		scanButton = (Button)findViewById(R.id.ScanButton);
 		
-		scanButton.setOnClickListener(new OnClickListener () {
-			public void onClick(View v) {
-				if(barcodeScanned) {
-					barcodeScanned = false;
-					scanText.setText("Scanning...");
-					mCamera.setPreviewCallback(previewCb);
-					mCamera.startPreview();
-					previewing = true;
-					mCamera.autoFocus(autoFocusCB);
-				}
-			}
-		});
  		
 	}
 
@@ -156,7 +142,6 @@ public class CameraScan extends Activity {
 				for (Symbol sym : syms) {
 					passUpc = sym.getData();
 					scanText.setText("barcode result " + sym.getData());
-					barcodeScanned = true;
 				}
 				
 				//Open Lookup

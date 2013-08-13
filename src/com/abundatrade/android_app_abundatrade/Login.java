@@ -8,13 +8,10 @@ import android.os.AsyncTask;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.Button;
-import android.widget.Toast;
 import android.content.Intent;
 import android.widget.TextView;
-import org.codehaus.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.apache.http.HttpEntity;
@@ -25,7 +22,6 @@ import org.apache.http.impl.client.*;
 import org.apache.http.util.EntityUtils;
 
 import java.security.MessageDigest;
-import java.security.MessageDigestSpi;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
 import android.content.Context;
@@ -35,6 +31,14 @@ import android.app.AlertDialog;
 
 import android.widget.EditText;
 
+/**
+ * Activity class that handles user login. Users will login using their
+ * abundatrade.com credentials and will then be able to add items via other
+ * activities in the program.
+ * 
+ * @author James D.
+ * @version 1.0
+ */
 public class Login extends Activity {
 
 	EditText login_edit;
@@ -44,7 +48,6 @@ public class Login extends Activity {
 	public String url;
 	public JSONObject json;
 	final Context context = this;
-
 
 	public static final String PREFS_NAME = "AbundaPrefs";
 	private static final String PREF_USERNAME = "username";
@@ -58,13 +61,8 @@ public class Login extends Activity {
 	private String pw;
 	private String syncKey;
 	private String loginStatus;
-	private String intErrors;
-	private String jsonString;
 	private CheckBox add_all;
 	private CheckBox remember_me;
-
-	
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,24 +82,23 @@ public class Login extends Activity {
 
 		remember_me = (CheckBox) findViewById(R.id.remember_check);
 
-
 		login_edit = (EditText) findViewById(R.id.login_field);
 		pw_edit = (EditText) findViewById(R.id.pw_field);
-		
-		//Get login and pw if stored
-		SharedPreferences pref = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+
+		// Get login and pw if stored
+		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		String prefUserName = pref.getString(PREF_USERNAME, null);
 		String prefPw = pref.getString(PREF_PASSWORD, null);
-		
-		//Fill the fields with stored login information
-		
-		if(prefUserName != null && prefPw != null) {
+
+		// Fill the fields with stored login information
+		/*
+		if (prefUserName != null && prefPw != null) {
 			remember_me.setChecked(true);
 			login_edit.setText(prefUserName, TextView.BufferType.EDITABLE);
 			pw_edit.setText(prefPw, TextView.BufferType.EDITABLE);
+			login_but.performClick();
 		}
-		
-
+		*/
 		/* Login button pressed */
 		login_but.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -133,25 +130,26 @@ public class Login extends Activity {
 				try {
 					loginStatus = json.getString("status");
 					System.out.println("Login Status: " + loginStatus);
+
+					/*
+					 * The following code is only used if the user successfully
+					 * logs in.
+					 */
 					if (loginStatus.equalsIgnoreCase("logged in")) {
 
 						rememberMe = remember_me.isChecked();
-						
-						//Store Login and Password
+
+						// Store Login and Password
 						if (rememberMe) {
 							getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-									.edit()
-									.putString(PREF_USERNAME, login)
-									.putString(PREF_PASSWORD, pw)
-									.commit();
+									.edit().putString(PREF_USERNAME, login)
+									.putString(PREF_PASSWORD, pw).commit();
 						}
-						//Erase any information stored
+						// Erase any information stored
 						else {
 							getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-										.edit()
-										.putString(PREF_USERNAME, null)
-										.putString(PREF_PASSWORD, null)
-										.commit();
+									.edit().putString(PREF_USERNAME, null)
+									.putString(PREF_PASSWORD, null).commit();
 						}
 
 						System.out.println("Logged In: Getting SyncKey");
@@ -175,6 +173,7 @@ public class Login extends Activity {
 					} else {
 						System.out.println("Login Failure!");
 
+						// Create and open an error dialog box
 						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 								context);
 
@@ -224,7 +223,15 @@ public class Login extends Activity {
 				Log.v("PW", pw);
 			}
 		});
+		
+		// Fill the fields with stored login information
 
+				if (prefUserName != null && prefPw != null) {
+					remember_me.setChecked(true);
+					login_edit.setText(prefUserName, TextView.BufferType.EDITABLE);
+					pw_edit.setText(prefPw, TextView.BufferType.EDITABLE);
+					login_but.performClick();
+				}
 		/* Create account button pressed */
 		acct_but.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -250,6 +257,12 @@ public class Login extends Activity {
 		});
 	}
 
+	/**
+	 * Implementation of md5 hashing for the password.
+	 * 
+	 * @param input
+	 * @return the md5 hashed version of the inputed string
+	 */
 	public static String md5(String input) {
 		String md5 = null;
 
@@ -269,6 +282,13 @@ public class Login extends Activity {
 		return md5;
 	}
 
+	/**
+	 * Embedded class that handles the server communications. Extends and
+	 * implements AsyncTask to run connections in a separate thread.
+	 * 
+	 * @author James D.
+	 * 
+	 */
 	private class connection extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... params) {
@@ -289,7 +309,15 @@ public class Login extends Activity {
 			}
 			return null;
 		}
-
+		
+		/**
+		 * Sends and receives httpget to the abundatrade server.
+		 * @param url of the get request
+		 * @return JSONObject containing login status and sync-key
+		 * @throws ClientProtocolException
+		 * @throws IOException
+		 * @throws JSONException
+		 */
 		public JSONObject getResponse(String url)
 				throws ClientProtocolException, IOException, JSONException {
 			System.out.println("URL: " + url);

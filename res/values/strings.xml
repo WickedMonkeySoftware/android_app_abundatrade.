@@ -18,5 +18,7 @@
     <string name="autoadd_radio">Add All Items</string>
     <string name="check_remember">Remember Me</string>
     <color name="white">#FFFFFF</color>
+    <string name="info">Info</string>
+    <string name="log_out">Log Out</string>
 
 </resources>
