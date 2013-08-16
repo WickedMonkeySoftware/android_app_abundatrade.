@@ -21,6 +21,7 @@ import org.apache.http.client.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.*;
 import org.apache.http.util.EntityUtils;
+import android.webkit.WebView;
 
 /**
  * Activity that sends user information (sync key) as well as a scanned
@@ -112,7 +113,7 @@ public class LookupAndAdd extends Activity {
 			itemCurrency = json.getString("currency_for_total");
 			itemQuantity = json.getString("Total");
 			itemID = json.getString("id");
-		} catch (JSONException e1) {
+		} catch (JSONException e1) { 
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -125,6 +126,18 @@ public class LookupAndAdd extends Activity {
 		System.out.println("Item Currency: " + itemCurrency);
 		System.out.println("Item Qty: " + itemQuantity);
 		System.out.println("Item ID: " + itemID);
+		//UPC = (TextView) findViewById(R.id.upcResult);
+
+		//UPC.setText(upcStore);
+		
+		WebView wview = (WebView) findViewById(R.id.webView1);
+		wview.getSettings().setJavaScriptEnabled(false);
+		
+		String html = String.format("<!DOCTYPE html><html><head>    <title>View Product Informations</title>    <style type=\"text/css\">        #picture_frame {            width: 75%%;            margin: auto;                        max-width:600px;            border-radius:20px;        }            #picture_frame img {                width: 100%%;                max-width: 600px;                border-radius:20px;            }        #picture_holder {            width: 100%%;            height: 50%%;        }        #title_holder {            width:100%%;        }        #product_code #barcode_option {            font-style:italic;        }        #title {            margin:auto;            width:auto;            text-align:center;            font-family:'Bookman Old Style', Bookman, 'URW Bookman L', 'Palatino Linotype', serif;            font-size:larger;            font-weight:bolder;        }        #details {            margin-top:10px;        }        body {            font-family: Verdana, Geneva, 'DejaVu Sans', sans-serif;        }    </style>    <script type=\"text/javascript\">    </script></head><body>    <div id=\"title_holder\">        <div id=\"title\"><span id=\"title_label\"></span> <span id=\"title_option\">%s</span></div>    </div>    <div id=\"picture_holder\">        <div id=\"picture_frame\">            <img src=\"%s\" alt=\"%s\" />        </div>    </div>    <div id=\"details\">        <div id=\"product_code\"><span id=\"barcode_label\">BarCode:</span> <span id=\"barcode_option\">%s</span></div>        <div id=\"amount\"><span id=\"amount_label\">Offer:</span> <span id=\"amount_option\">$%s</span></div>    </div></body></html>",
+				itemTitle, itemImage, itemTitle, upcStore, itemPrice);
+		System.out.println("HTML: " + html);
+		
+		wview.loadData(html, "text/html", "UTF-8");
 
 		Button addItem = (Button) findViewById(R.id.addButt);
 		
