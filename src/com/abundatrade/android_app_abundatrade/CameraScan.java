@@ -13,6 +13,7 @@ import android.content.Intent;
 
 import android.util.Log;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Button;
 
@@ -99,6 +100,10 @@ public class CameraScan extends Activity implements ScanditSDKListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		//Get login status and synckey if needed
 		Bundle passBundle = getIntent().getExtras();
 		loggedIn = passBundle.getBoolean("loggedIn");
@@ -118,6 +123,11 @@ public class CameraScan extends Activity implements ScanditSDKListener {
 		}
 		
 		mPicker.getOverlayView().addListener(this);
+		
+		mPicker.getOverlayView().showSearchBar(true);
+		mPicker.getOverlayView().setTextForBarcodeDecodingInProgress("Processing Item");
+		mPicker.getOverlayView().setTextForInitialScanScreenState("Align code with box");
+		mPicker.getOverlayView().setTextForBarcodePresenceDetected("Align code and stay still");
 //		
 //		
 //		//Get rid of title bar
