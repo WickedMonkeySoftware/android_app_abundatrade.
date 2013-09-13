@@ -96,7 +96,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/remember_check"
-        android:layout_toRightOf="@+id/lab_pw"
+        android:layout_centerHorizontal="true"
         android:text="@string/but_login" />
 
 </RelativeLayout>
