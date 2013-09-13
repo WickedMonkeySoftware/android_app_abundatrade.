@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Button;
+import android.widget.Toast;
 import android.content.Intent;
 import android.widget.TextView;
 import org.json.JSONException;

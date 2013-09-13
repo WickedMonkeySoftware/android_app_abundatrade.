@@ -1,6 +1,8 @@
 package com.abundatrade.android_app_abundatrade;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -42,13 +44,12 @@ public class CameraPreview extends SurfaceView implements
 		 * Set camera to continuous focus if supported, otherwise use software
 		 * auto-focus. Only works for API level >=9.
 		 */
-		/*
-		 * Camera.Parameters parameters = camera.getParameters(); for (String f
-		 * : parameters.getSupportedFocusModes()) { if (f ==
-		 * Parameters.FOCUS_MODE_CONTINUOUS_PICTURE) {
-		 * mCamera.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-		 * autoFocusCallback = null; break; } }
-		 */
+		
+		 //Camera.Parameters parameters = camera.getParameters(); for (String f
+		 //: parameters.getSupportedFocusModes()) { if (f ==
+		 //Parameters.FOCUS_MODE_CONTINUOUS_PICTURE) {
+		 //mCamera.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+		 //autoFocusCallback = null; break; } }
 
 		// Install a SurfaceHolder.Callback so we get notified when the
 		// underlying surface is created and destroyed.
@@ -64,8 +65,9 @@ public class CameraPreview extends SurfaceView implements
 		// preview.
 		try {
 			mCamera.setPreviewDisplay(holder);
-		} catch (IOException e) {
-			Log.d("DBG", "Error setting camera preview: " + e.getMessage());
+		}
+		catch (Exception ex) {
+			
 		}
 	}
 
