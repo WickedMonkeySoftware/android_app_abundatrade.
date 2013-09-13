@@ -58,6 +58,20 @@ public class LookupAndAdd extends Activity {
 	private static final String PREF_PASSWORD = "password";
 
 	@Override
+	public void onBackPressed() {
+		Intent i = new Intent(LookupAndAdd.this, CameraScan.class);
+		i.putExtra("loggedIn", loggedIn);
+		if (loggedIn) {
+			i.putExtra("synckey", syncKey);
+			i.putExtra("lookupAll", lookupAll);
+		}
+		startActivity(i);
+		
+		//close original instance of CameraScan
+		finish();
+	}
+	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lookup_and_add);

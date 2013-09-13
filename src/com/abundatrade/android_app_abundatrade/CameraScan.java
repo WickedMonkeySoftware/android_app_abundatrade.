@@ -67,6 +67,7 @@ public class CameraScan extends Activity implements ScanditSDKListener {
 	}
 	
 	private void ShowResult(String barcode) {
+		this.releaseCamera();
 		Intent i = new Intent(CameraScan.this, LookupAndAdd.class);
 		i.putExtra("UPC", barcode);
 		i.putExtra("loggedIn", loggedIn);
