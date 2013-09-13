@@ -62,11 +62,27 @@ public class CameraScan extends Activity implements ScanditSDKListener {
 	
 	@Override
 	public void didScanBarcode(String barcode, String symboligy) {
-		//TODO: Process this shit here
+		ShowResult(barcode);
+	}
+	
+	private void ShowResult(String barcode) {
+		Intent i = new Intent(CameraScan.this, LookupAndAdd.class);
+		i.putExtra("UPC", barcode);
+		i.putExtra("loggedIn", loggedIn);
+		if (loggedIn) {
+			i.putExtra("synckey", syncKey);
+			i.putExtra("lookupAll", lookupAll);
+		}
+		startActivity(i);
+		
+		//close original instance of CameraScan
+		finish();
 	}
 	
 	@Override
-	public void didManualSearch(String entry) {}
+	public void didManualSearch(String entry) {
+		ShowResult(entry);
+	}
 
 	@Override
 	public void didCancel() {}
