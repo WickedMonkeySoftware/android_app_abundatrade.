@@ -43,6 +43,8 @@ public class LookupAndAdd extends Activity {
 	public boolean loggedIn;
 	public boolean lookupAll;
 	public boolean lookup_done;
+	
+	private Button addItem;
 
 	public String itemTotalQty;
 	public String itemTotal;
@@ -147,43 +149,29 @@ public class LookupAndAdd extends Activity {
 		WebView wview = (WebView) findViewById(R.id.webView1);
 		wview.getSettings().setJavaScriptEnabled(false);
 		
-		String html = String.format("<!DOCTYPE html><html><head>    <title>View Product Informations</title>    <style type=\"text/css\">        #picture_frame {            width: 75%%;            margin: auto;                        max-width:600px;            border-radius:20px;        }            #picture_frame img {                width: 100%%;                max-width: 600px;                border-radius:20px;            }        #picture_holder {            width: 100%%;            height: 50%%;        }        #title_holder {            width:100%%;        }        #product_code #barcode_option {            font-style:italic;        }        #title {            margin:auto;            width:auto;            text-align:center;            font-family:'Bookman Old Style', Bookman, 'URW Bookman L', 'Palatino Linotype', serif;            font-size:larger;            font-weight:bolder;        }        #details {            margin-top:10px;        }        body {            font-family: Verdana, Geneva, 'DejaVu Sans', sans-serif;        }    </style>    <script type=\"text/javascript\">    </script></head><body>    <div id=\"title_holder\">        <div id=\"title\"><span id=\"title_label\"></span> <span id=\"title_option\">%s</span></div>    </div>    <div id=\"picture_holder\">        <div id=\"picture_frame\">            <img src=\"%s\" alt=\"%s\" />        </div>    </div>    <div id=\"details\">        <div id=\"product_code\"><span id=\"barcode_label\">BarCode:</span> <span id=\"barcode_option\">%s</span></div>        <div id=\"amount\"><span id=\"amount_label\">Offer:</span> <span id=\"amount_option\">$%s</span></div>    </div></body></html>",
-				itemTitle, itemImage, itemTitle, upcStore, itemPrice);
+		String html = String.format("<!DOCTYPE html><html><head><title>View Product Informations</title>    <style type='text/css'>        #picture_frame {            height: 75%%;            float: left;            margin: auto;            max-height: 600px;            border-radius: 20px;        }            #picture_frame img {                height: 100%%;                max-height: 600px;                border-radius: 20px;            }        #picture_holder {            width: 100%%;            height: 100%%;        }        #title_holder {            width: 100%%;        }        #product_code #barcode_option {            font-style: italic;        }        #title {            margin: auto;            width: auto;            text-align: center;            font-family: 'Bookman Old Style', Bookman, 'URW Bookman L', 'Palatino Linotype', serif;            font-size: larger;            font-weight: bolder;        }        #details {            margin-top: 10px;        }        body {            font-family: Verdana, Geneva, 'DejaVu Sans', sans-serif;        }    </style>    <script type='text/javascript'>    </script></head><body>    <div id='title_holder'>        <div id='title'><span id='title_label'></span><span id='title_option'>%s</span></div>    </div>    <div id='details'>        <div id='product_code'><span id='barcode_label'>BarCode:</span> <span id='barcode_option'>%s</span></div>        <div id='amount'><span id='amount_label'>Offer:</span> <span id='amount_option'>$%s</span></div>    </div>    <div id='picture_holder'>        <div id='picture_frame'>            <img src='%s' alt='%s' />        </div>    </div></body></html>",
+				itemTitle, upcStore, itemPrice, itemImage, itemTitle);
 		System.out.println("HTML: " + html);
 		
 		wview.loadData(html, "text/html", "UTF-8");
 
-		Button addItem = (Button) findViewById(R.id.addButt);
+		addItem = (Button) findViewById(R.id.addButt);
 		
-		/* Add item button pressed */
-		addItem.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				lookup_done = false;
-				setResult(RESULT_OK);
-
-				// Add item to list if logged in
-				if (loggedIn) {
-					url = "http://abundatrade.com/trade/process/request.php?mobile_scan=t&"
-							+ "mobile_type=android&sync_key="
-							+ syncKey
-							+ "&product_code="
-							+ upcStore
-							+ "&action=lookup_item&product_qty=1";
-					new connection().execute("text");
-					while (lookup_done == false) {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				} else {
-					System.out.println("Not Logged IN!!!!");
+		setAutoAdd();
+		
+		if (loggedIn) {
+		
+			/* Add item button pressed */
+			addItem.setOnClickListener(new OnClickListener() {
+				public void onClick(View arg0) {
+					addCurrentItem();
 				}
-
-			}
-		});
+			});
+			addItem.setVisibility(View.VISIBLE);
+		}
+		else {
+			addItem.setVisibility(View.INVISIBLE);
+		}
 
 		Button contScan = (Button) findViewById(R.id.contScan);
 		
@@ -203,13 +191,44 @@ public class LookupAndAdd extends Activity {
 		});
 	}
 	
+	private void addCurrentItem() {
+		lookup_done = false;
+		setResult(RESULT_OK);
+
+		// Add item to list if logged in
+		if (loggedIn) {
+			url = "http://abundatrade.com/trade/process/request.php?mobile_scan=t&"
+					+ "mobile_type=android&sync_key="
+					+ syncKey
+					+ "&product_code="
+					+ upcStore
+					+ "&action=lookup_item&product_qty=1";
+			new connection().execute("text");
+			while (lookup_done == false) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} else {
+			System.out.println("Not Logged IN!!!!");
+		}
+	}
+	
 	/**
 	 * Creates a menu if the user presses the menu button on their phone.
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.lookup_and_add, menu);
+		if (loggedIn) {
+			inflater.inflate(R.menu.lookup_and_add, menu);
+		}
+		else {
+			inflater.inflate(R.menu.lookup_and_add_logged_out, menu);
+		}
 		return true;
 	}
 	
@@ -220,19 +239,38 @@ public class LookupAndAdd extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.log_out:
+			DoLogout();
+		case R.id.log_in:
 			//Remove the stored login information and return to login screen
-			getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
-					.putString(PREF_USERNAME, null)
-					.putString(PREF_PASSWORD, null).commit();
-			startActivity(new Intent(this, Login.class));
+			Intent login = new Intent(this, Login.class);
+			login.putExtra("returnTo", true);
+			login.putExtra("UPC", upcStore);
+			startActivity(login);
 			finish();
 			return true;
-		case R.id.info:
-			// startActivity(new Intent(this, Info.class));
+		case R.id.auto_add:
+			lookupAll = !lookupAll;
+			setAutoAdd();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void setAutoAdd() {
+		if (lookupAll) {
+			addItem.setEnabled(false);
+			addCurrentItem();
+		}
+		else {
+			addItem.setEnabled(true);
+		}
+	}
+
+	private void DoLogout() {
+		getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+		.putString(PREF_USERNAME, null)
+		.putString(PREF_PASSWORD, null).commit();
 	}
 
 	public void setUpc(String UPC) {

@@ -4,7 +4,8 @@
         android:id="@+id/log_out"
         android:title="@string/log_out"/>
     <item
-        android:id="@+id/info"
-        android:title="@string/info"/>
+        android:id="@+id/auto_add"
+        android:title="@string/auto_add_on">
+    </item>
 
 </menu>

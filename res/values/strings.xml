@@ -14,7 +14,7 @@
     <string name="nLogin">Just Scan</string>
     <string name="acct_create">Create Account</string>
     <string name="head_desc">Abunda Header</string>
-    <string name="button_add">Add</string>
+    <string name="button_add">Add To List</string>
     <string name="autoadd_radio">Add All Items</string>
     <string name="check_remember">Remember Me</string>
 
@@ -22,5 +22,9 @@
 
     <string name="info">Info</string>
     <string name="log_out">Log Out</string>
+    <string name="scan_again">Scan Again</string>
+    <string name="options">Options</string>
+    <string name="auto_add_on">Toggle Auto Add</string>
+    <string name="auto_add_off">Turn off Auto Add to List</string>
 
 </resources>

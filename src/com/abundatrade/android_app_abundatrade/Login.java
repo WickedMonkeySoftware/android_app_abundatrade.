@@ -2,6 +2,8 @@ package com.abundatrade.android_app_abundatrade;
 
 import java.io.*;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.AsyncTask;
@@ -64,9 +66,50 @@ public class Login extends Activity {
 	private String loginStatus;
 	private CheckBox add_all;
 	private CheckBox remember_me;
+	private AlertDialog no_internet;
 
+	private void CheckInternet() {
+		ConnectivityManager cm =
+		        (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		 
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = false;
+		
+		if (activeNetwork != null) {
+			isConnected = activeNetwork.isConnectedOrConnecting();
+		}
+		
+		if (!isConnected) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					context);
+
+			alertDialogBuilder.setTitle("Not Connected");
+
+			alertDialogBuilder
+					.setMessage(
+							"Please connect your device to the internet to continue")
+					.setCancelable(false);
+
+			// create alert dialog
+			no_internet = alertDialogBuilder.create();
+
+			// show it
+			no_internet.show();
+		}
+		else if (isConnected && no_internet != null) {
+			no_internet.hide();
+		}
+	}
+	
+	@Override
+	protected void onResume(){
+		CheckInternet();
+		super.onResume();
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
@@ -79,7 +122,8 @@ public class Login extends Activity {
 		Button login_but = (Button) findViewById(R.id.but_login);
 		Button acct_but = (Button) findViewById(R.id.but_cr_acct);
 		Button scan_but = (Button) findViewById(R.id.but_nlogin);
-		add_all = (CheckBox) findViewById(R.id.autoadd_check);
+		//add_all = (CheckBox) findViewById(R.id.autoadd_check);
+		//add_all = false;
 
 		remember_me = (CheckBox) findViewById(R.id.remember_check);
 
@@ -160,14 +204,31 @@ public class Login extends Activity {
 						setResult(RESULT_OK);
 
 						// check scan all option
-						lookupAll = add_all.isChecked();
+						//lookupAll = add_all.isChecked();
 
 						// Start Scanner
-						Intent i = new Intent(Login.this, CameraScan.class);
+						Bundle passBundle = getIntent().getExtras();
+						Boolean returnTo = false;
+						String upc = "";
+						if (passBundle != null) {
+							returnTo = passBundle.getBoolean("returnTo");
+							upc = (String)passBundle.get("UPC");
+						}
+						
+						Class<?> next;
+						if (returnTo) {
+							next = LookupAndAdd.class;
+						}
+						else {
+							next = CameraScan.class;
+						}
+						
+						Intent i = new Intent(Login.this, next);
 						// Pass syncKey and login status
 						i.putExtra("synckey", syncKey);
 						i.putExtra("loggedIn", loggedIn);
 						i.putExtra("lookupAll", lookupAll);
+						i.putExtra("UPC", upc);
 						startActivity(i);
 						finish();
 
