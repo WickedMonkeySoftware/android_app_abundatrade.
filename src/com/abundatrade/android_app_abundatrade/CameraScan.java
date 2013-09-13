@@ -125,9 +125,8 @@ public class CameraScan extends Activity implements ScanditSDKListener {
 		mPicker.getOverlayView().addListener(this);
 		
 		mPicker.getOverlayView().showSearchBar(true);
-		mPicker.getOverlayView().setTextForBarcodeDecodingInProgress("Processing Item");
-		mPicker.getOverlayView().setTextForInitialScanScreenState("Align code with box");
-		mPicker.getOverlayView().setTextForBarcodePresenceDetected("Align code and stay still");
+		mPicker.set2DScanningEnabled(false);
+		mPicker.setInverseRecognitionEnabled(true);
 //		
 //		
 //		//Get rid of title bar
