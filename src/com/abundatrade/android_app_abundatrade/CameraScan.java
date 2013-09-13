@@ -1,5 +1,8 @@
 package com.abundatrade.android_app_abundatrade;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import com.abundatrade.android_app_abundatrade.CameraPreview;
 
 import android.app.Activity;
@@ -8,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
 
+import android.util.Log;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.Button;
@@ -19,11 +23,17 @@ import android.hardware.Camera.Size;
 
 import android.widget.TextView;
 /* Import ZBar Class files */
-import net.sourceforge.zbar.ImageScanner;
-import net.sourceforge.zbar.Image;
-import net.sourceforge.zbar.Symbol;
-import net.sourceforge.zbar.SymbolSet;
-import net.sourceforge.zbar.Config;
+//import net.sourceforge.zbar.ImageScanner;
+//import net.sourceforge.zbar.Image;
+//import net.sourceforge.zbar.Symbol;
+//import net.sourceforge.zbar.SymbolSet;
+//import net.sourceforge.zbar.Config;
+import com.mirasense.*;
+import com.mirasense.scanditsdk.LegacyPortraitScanditSDKBarcodePicker;
+import com.mirasense.scanditsdk.ScanditSDKAutoAdjustingBarcodePicker;
+import com.mirasense.scanditsdk.ScanditSDKBarcodePicker;
+import com.mirasense.scanditsdk.interfaces.ScanditSDK;
+import com.mirasense.scanditsdk.interfaces.ScanditSDKListener;
 
 /**
  * Activity that utilizes the camera to scan a barcode.  Supports
@@ -31,11 +41,11 @@ import net.sourceforge.zbar.Config;
  * @author James D.
  * Code provided by zbar library under the lgpl2.0 license.
  */
-public class CameraScan extends Activity {
+public class CameraScan extends Activity implements ScanditSDKListener {
 
-	private Camera mCamera;
-	private CameraPreview mPreview;
-	private Handler autoFocusHandler;
+	//private Camera mCamera;
+	//private CameraPreview mPreview;
+	//private Handler autoFocusHandler;
 
 	public TextView scanText;
 	public TextView resultText;
@@ -43,13 +53,31 @@ public class CameraScan extends Activity {
 	public boolean loggedIn;
 	public boolean lookupAll;
 	public String syncKey;
-	public ImageScanner scanner;
+	
+	@Override
+	public void onResume() {
+		mPicker.startScanning();
+		super.onResume();
+	}
+	
+	@Override
+	public void didScanBarcode(String barcode, String symboligy) {
+		//TODO: Process this shit here
+	}
+	
+	@Override
+	public void didManualSearch(String entry) {}
+
+	@Override
+	public void didCancel() {}
 
 	private boolean previewing = true;
 
 	static {
 		System.loadLibrary("iconv");
 	}
+	
+	protected ScanditSDK mPicker = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,66 +91,124 @@ public class CameraScan extends Activity {
 			syncKey = passBundle.getString("synckey");
 		}
 		
+		if (ScanditSDKBarcodePicker.canRunPortraitPicker()) {
+			ScanditSDKAutoAdjustingBarcodePicker picker = new ScanditSDKAutoAdjustingBarcodePicker(this, "OzptRBwZEeODufuirCM1b8SQmwfm7aAzzZGoheZrpNM", 0);
+			mPicker = picker;
+			setContentView(picker);
+		}
+		else {
+			ScanditSDK picker = new LegacyPortraitScanditSDKBarcodePicker(this, "OzptRBwZEeODufuirCM1b8SQmwfm7aAzzZGoheZrpNM");
+			mPicker = picker;
+		}
 		
-		//Get rid of title bar
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_camera_scan);
-	
-		//Initial screen state portrait
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
-		autoFocusHandler = new Handler();
-		mCamera = getCameraInstance();
-		
-		/* Instantiate barcode scanner */
-		scanner = new ImageScanner();
-		scanner.setConfig(0, Config.X_DENSITY, 3);
-		scanner.setConfig(0, Config.Y_DENSITY, 3);
-		
-		mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
-		FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
-		preview.addView(mPreview);
-		
-		//scanning echo
-		scanText = (TextView)findViewById(R.id.scanText);
-		//result text
-		resultText= (TextView)findViewById(R.id.upcResult);
-		
- 		
+		mPicker.getOverlayView().addListener(this);
+//		
+//		
+//		//Get rid of title bar
+//		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//		setContentView(R.layout.activity_camera_scan);
+//	
+//		//Initial screen state portrait
+//		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//		
+//		autoFocusHandler = new Handler();
+//		mCamera = getCameraInstance();
+//		
+//		/* Instantiate barcode scanner */
+//		scanner = new ImageScanner();
+//		scanner.setConfig(0, Config.X_DENSITY, 3);
+//		scanner.setConfig(0, Config.Y_DENSITY, 3);
+//		
+//		mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+//		FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
+//		preview.addView(mPreview);
+//		
+//		//scanning echo
+//		scanText = (TextView)findViewById(R.id.scanText);
+//		//result text
+//		resultText= (TextView)findViewById(R.id.upcResult);
+//		
+// 		
 	}
 
 	public void onPause() {
-		super.onPause();
 		releaseCamera();
+		super.onPause();
 	}
 
 	/** A safe way to get an instance of the Camera object. */
 	public static Camera getCameraInstance() {
-		Camera c = null;
+		Camera mCamera = null;
 		try {
-			c = Camera.open();
+			mCamera = Camera.open();
+			
+			if (mCamera == null) {
+				Class<?> cameraClass = Camera.class;
+				Class<?> cameraInfoClass = Class.forName("android.hardware.Camera$CameraInfo");
+				Object cameraInfo = null;
+				
+				Method getNumCamerasMethod = cameraClass.getMethod("getNumberOfCameras");
+				Method getCameraInfoMethod = null;
+				
+				Field facingField = null;
+				
+				int cameraCount = 0;
+				
+				if (getNumCamerasMethod != null && cameraInfoClass != null) {
+					cameraCount = (Integer) getNumCamerasMethod.invoke(null, (Object[]) null);
+					cameraInfo = cameraInfoClass.newInstance();
+					getCameraInfoMethod = cameraClass.getMethod("getCameraInfo", Integer.TYPE, cameraInfoClass);
+					
+					if (cameraInfo != null) {
+						facingField = cameraInfo.getClass().getField("facing");
+					}
+				}
+				
+				if (getCameraInfoMethod != null && facingField != null) {
+					for (int cameraIndex = 0; cameraIndex < cameraCount; cameraIndex++) {
+						getCameraInfoMethod.invoke(null, cameraIndex, cameraInfo);
+						
+						int facing = facingField.getInt(cameraInfo);
+						
+						if (facing == 1) {
+							Method cameraOpenMethod = cameraClass.getMethod("open", Integer.TYPE);
+							
+							if (cameraOpenMethod != null) {
+								try {
+									mCamera = (Camera)cameraOpenMethod.invoke(null, cameraIndex);
+								}
+								catch (Exception ex) {
+									Log.e("err", "Camera failed to open");
+								}
+							}
+						}
+					}
+				}
+			}
+			
 		} catch (Exception e) {
 		}
-		return c;
+		return mCamera;
 	}
 
 	private void releaseCamera() {
-		if (mCamera != null) {
-			previewing = false;
-			mCamera.setPreviewCallback(null);
-			mCamera.release();
-			mCamera = null;
-		}
+		mPicker.stopScanning();
+		//if (mCamera != null) {
+		//	previewing = false;
+		//	mCamera.setPreviewCallback(null);
+		//	mCamera.release();
+		//	mCamera = null;
+		//}
 	}
 
-	private Runnable doAutoFocus = new Runnable() {
+	/*private Runnable doAutoFocus = new Runnable() {
 		public void run() {
 			if (previewing)
 				mCamera.autoFocus(autoFocusCB);
 		}
-	};
+	};*/
 
-	PreviewCallback previewCb = new PreviewCallback() {
+	/*PreviewCallback previewCb = new PreviewCallback() {
 		public void onPreviewFrame(byte[] data, Camera camera) {
 			Camera.Parameters parameters = camera.getParameters();
 			Size size = parameters.getPreviewSize();
@@ -159,14 +245,14 @@ public class CameraScan extends Activity {
 				
 			}
 		}
-	};
+	};*/
 
-	// Mimic continuous auto-focusing
+	/* Mimic continuous auto-focusing
 	AutoFocusCallback autoFocusCB = new AutoFocusCallback() {
 		public void onAutoFocus(boolean success, Camera camera) {
 			autoFocusHandler.postDelayed(doAutoFocus, 1000);
 		}
-	};
+	};*/
 
 	
 }
