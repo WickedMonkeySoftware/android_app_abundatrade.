@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TableLayout;
 import android.content.Intent;
 import android.widget.TextView;
 import org.json.JSONException;
@@ -45,6 +46,7 @@ public class LookupAndAdd extends Activity {
 	public boolean lookup_done;
 	
 	private Button addItem;
+	private TableLayout theTable;
 
 	public String itemTotalQty;
 	public String itemTotal;
@@ -161,6 +163,12 @@ public class LookupAndAdd extends Activity {
 		
 		if (loggedIn) {
 		
+			theTable = (TableLayout) findViewById(R.id.table1);
+			
+			if (theTable != null) {
+				//show active list here
+			}
+			
 			/* Add item button pressed */
 			addItem.setOnClickListener(new OnClickListener() {
 				public void onClick(View arg0) {

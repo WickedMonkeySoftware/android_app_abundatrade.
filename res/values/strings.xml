@@ -25,6 +25,6 @@
     <string name="scan_again">Scan Again</string>
     <string name="options">Options</string>
     <string name="auto_add_on">Toggle Auto Add</string>
-    <string name="auto_add_off">Turn off Auto Add to List</string>
+    <string name="current_list">Current Active List</string>
 
 </resources>
