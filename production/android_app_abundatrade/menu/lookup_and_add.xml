@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/log_out"
+        android:title="@string/log_out"/>
+    <item
+        android:id="@+id/auto_add"
+        android:title="@string/auto_add_on">
+    </item>
+
+</menu>

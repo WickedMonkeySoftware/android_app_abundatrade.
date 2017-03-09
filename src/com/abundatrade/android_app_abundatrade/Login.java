@@ -347,9 +347,9 @@ public class Login extends Activity {
 	/**
 	 * Embedded class that handles the server communications. Extends and
 	 * implements AsyncTask to run connections in a separate thread.
-	 * 
+	 *
 	 * @author James D.
-	 * 
+	 *
 	 */
 	private class connection extends AsyncTask<String, Integer, String> {
 		@Override
@@ -371,7 +371,7 @@ public class Login extends Activity {
 			}
 			return null;
 		}
-		
+
 		/**
 		 * Sends and receives httpget to the abundatrade server.
 		 * @param url of the get request

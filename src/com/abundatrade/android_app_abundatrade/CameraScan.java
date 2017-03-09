@@ -29,7 +29,7 @@ import android.widget.TextView;
 //import net.sourceforge.zbar.Symbol;
 //import net.sourceforge.zbar.SymbolSet;
 //import net.sourceforge.zbar.Config;
-import com.mirasense.*;
+//import com.mirasense.*;
 import com.mirasense.scanditsdk.LegacyPortraitScanditSDKBarcodePicker;
 import com.mirasense.scanditsdk.ScanditSDKAutoAdjustingBarcodePicker;
 import com.mirasense.scanditsdk.ScanditSDKBarcodePicker;

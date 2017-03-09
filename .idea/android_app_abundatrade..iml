@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/../../android_app_abundatrade./gen" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/../../android_app_abundatrade./gen" />
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../../android_app_abundatrade./AndroidManifest.xml" />
+        <option name="RES_FOLDER_RELATIVE_PATH" value="/../../android_app_abundatrade./res" />
+        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../../android_app_abundatrade./assets" />
+        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../../android_app_abundatrade./libs" />
+        <option name="PROGUARD_LOGS_FOLDER_RELATIVE_PATH" value="/../../android_app_abundatrade./proguard_logs" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/production/android_app_abundatrade" />
+    <output-test url="file://$MODULE_DIR$/production" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="scanditsdk-barcodepicker-android-3.5.0" level="project" />
+    <orderEntry type="library" name="jackson-mini-1.9.11" level="project" />
+    <orderEntry type="library" name="android-support-v4" level="project" />
+    <orderEntry type="library" name="scanditsdk-barcodepicker-android-4.3.3" level="project" />
+  </component>
+</module>
